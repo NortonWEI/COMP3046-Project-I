@@ -8,8 +8,7 @@ import java.util.ArrayList;
  * Created by NortonWEI on 3/3/2017.
  */
 public class User {
-    private static int userId = 0;
-
+    private int userId = 0;
     private String name = "";
     private String username = "";
     private String password = "";
@@ -18,7 +17,7 @@ public class User {
     private int tel = -1;
 
     public User(String name, String username, String password, String birthday, int gender, int tel) {
-        setUserId();
+        setId();
         this.name = name;
         this.username = username;
         this.password = password;
@@ -37,10 +36,10 @@ public class User {
         this.tel = tel;
     }
 
-    private void setUserId() {
+    private void setId() {
         boolean ifBreak = false;
         DatabaseConnector databaseConnector = new DatabaseConnector();
-        ArrayList<Integer> userIdList = databaseConnector.listUserId();
+        ArrayList<Integer> userIdList = databaseConnector.listId("USER");
         for (int i=0; i<userIdList.size(); i++) {
             if (userIdList.get(i) != i) {
                 userId = i;
@@ -49,11 +48,13 @@ public class User {
             }
         }
         if (!ifBreak) {
-            userId = userIdList.get(userIdList.size()-1) + 1;
+            if (!userIdList.isEmpty()) {
+                userId = userIdList.get(userIdList.size()-1) + 1;
+            }
         }
     }
 
-    public static int getUserId() {
+    public int getUserId() {
         return userId;
     }
 
