@@ -33,7 +33,7 @@ public class Movie {
         this.offDate = offDate;
     }
 
-    public Movie(int movieId, String name, String description, boolean if3D, int length, int category, String director, String starring, String releaseDate, String offDate) {
+    public Movie(int movieId, String name, String description, boolean if3D, int length, int category, String director, String starring, String releaseDate, String offDate, float score) {
         this.movieId = movieId;
         this.name = name;
         this.description = description;
@@ -44,6 +44,7 @@ public class Movie {
         this.starring = starring;
         this.releaseDate = releaseDate;
         this.offDate = offDate;
+        this.score = score;
     }
 
     private void setId() {

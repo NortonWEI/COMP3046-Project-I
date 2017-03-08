@@ -1,9 +1,7 @@
 package controller;
 
-import model.Cinema;
-import model.House;
-import model.Seat;
-import model.User;
+import model.*;
+
 import java.sql.*;
 import java.util.*;
 
@@ -399,7 +397,109 @@ public class DatabaseConnector {
     }
 
     /** Movie Operation */
+    public void createMovie(Movie movie) {
+        connect();
+        try {
+            Statement statement = connection.createStatement();
+            String sqlStr = "INSERT INTO MOVIE VALUES (" +
+                    movie.getMovieId() + ", " +
+                    "'" + movie.getName() + "', " +
+                    "'" + movie.getDescription() + "', " +
+                    movie.isIf3D() + ", " +
+                    movie.getLength() + ", " +
+                    movie.getCategory() + ", " +
+                    "'" + movie.getDirector() + "', " +
+                    "'" + movie.getStarring() + "', " +
+                    "str_to_date('" + movie.getReleaseDate() + "', '%d-%m-%Y'), " +
+                    "str_to_date('" + movie.getOffDate() + "', '%d-%m-%Y'), " +
+                    movie.getScore() +
+                    ")";
+            statement.executeUpdate(sqlStr);
+            statement.close();
+            System.out.println("Added movie with id: " + movie.getMovieId());
+        } catch (SQLException e) {
+            System.out.println("Create movie failed!");
+            e.printStackTrace();
+            return;
+        }
+        close();
+    }
 
+    public Movie findMovie(String name, boolean if3D) {
+        Movie foundMovie = null;
+        connect();
+        try {
+            Statement statement = connection.createStatement();
+            String sqlStr = "SELECT * FROM MOVIE " +
+                    "WHERE NAME = '" + name + "' AND IF_3D = " + if3D;
+            ResultSet resultSet = statement.executeQuery(sqlStr);
+            if (resultSet.next()) {
+                System.out.println("Found movie with id: " + resultSet.getInt(1));
+                foundMovie = new Movie(resultSet.getInt(1), resultSet.getString(2),
+                        resultSet.getString(3), resultSet.getBoolean(4), resultSet.getInt(5),
+                        resultSet.getInt(6), resultSet.getString(7), resultSet.getString(8),
+                        resultSet.getString(9), resultSet.getString(10), resultSet.getFloat(11));
+            } else {
+                System.out.println("Movie not found!");
+            }
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            System.out.println("Find movie failed!");
+            e.printStackTrace();
+        }
+        close();
+        return foundMovie;
+    }
+
+    public void updateMovie(String name, String description, boolean if3D, int length, int category, String director, String starring, String releaseDate, String offDate, float score) {
+        Movie foundMovie = findMovie(name,if3D);
+        connect();
+        try {
+            if (foundMovie != null) {
+                Statement statement = connection.createStatement();
+                String sqlStr = "UPDATE MOVIE " +
+                        "SET NAME = '" +
+                        name + "', DESCRIPTION = '" +
+                        description + "', IF_3D = " +
+                        if3D + ", LENGTH = " +
+                        length + ", CATEGORY = " +
+                        category + "', DIRECTOR = '" +
+                        director + "', STARRING = '" +
+                        starring + "', RELEASE_DATE = '" +
+                        releaseDate + "', OFF_DATE = '" +
+                        offDate + "', SCORE = " +
+                        score + " " +
+                        "WHERE ID = " + foundMovie.getMovieId();
+                statement.executeUpdate(sqlStr);
+                statement.close();
+                System.out.println("Updated movie with id: " + foundMovie.getMovieId());
+            }
+        } catch (SQLException e) {
+            System.out.println("Update movie failed!");
+            e.printStackTrace();
+            return;
+        }
+        close();
+    }
+
+    public void deleteMovie(String name, boolean if3D) {
+        Movie foundMovie = findMovie(name, if3D);
+        connect();
+        try {
+            Statement statement = connection.createStatement();
+            String sqlStr = "DELETE FROM MOVIE " +
+                    "WHERE ID = " + foundMovie.getMovieId();
+            statement.executeUpdate(sqlStr);
+            statement.close();
+            System.out.println("Deleted movie with id: " + foundMovie.getMovieId());
+        } catch (SQLException e) {
+            System.out.println("Delete movie failed!");
+            e.printStackTrace();
+            return;
+        }
+        close();
+    }
 
     private void close() {
         try {
