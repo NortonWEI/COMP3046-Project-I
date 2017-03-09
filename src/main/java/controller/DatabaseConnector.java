@@ -348,8 +348,7 @@ public class DatabaseConnector {
         close();
     }
 
-    public Seat findSeat(int rowNo, int columnNo, String houseName, int cinemaId) {
-        int houseId = findHouse(houseName, cinemaId).getHouseId();
+    public Seat findSeat(int rowNo, int columnNo, int houseId) {
         Seat foundSeat = null;
         connect();
         try {
@@ -374,8 +373,8 @@ public class DatabaseConnector {
         return foundSeat;
     }
 
-    public void updateSeat(int rowNo, int columnNo, String houseName, int cinemaId, boolean ifOccupied, int scheduleId) {
-        Seat foundSeat = findSeat(rowNo,columnNo,houseName, cinemaId);
+    public void updateSeat(int rowNo, int columnNo, int houseId, boolean ifOccupied, int scheduleId) {
+        Seat foundSeat = findSeat(rowNo,columnNo,houseId);
         connect();
         try {
             if (foundSeat != null) {
@@ -642,53 +641,51 @@ public class DatabaseConnector {
         close();
     }
 
-//    public Ticket findTicket(String username, String movieName, boolean if3D, String startTime, int seatRowNo, int seatColumnNo) {
-//        int userId = findUser(username).getUserId();
-//        int scheduleId = findSchedule(movieName, if3D, startTime).getScheduleId();
-////        Cinema foundCinema = findCinema();
-////        House foundHouse = findHouse();
-////        int seatId = findSeat(seatRowNo, seatColumnNo).getSeatId();
-//        Ticket foundTicket = null;
-//        connect();
-//        try {
-//            Statement statement = connection.createStatement();
-//            String sqlStr = "SELECT * FROM TICKET " +
-//                    "WHERE USER_ID = " + userId + " AND SCHEDULE_ID = " + scheduleId + " AND SEAT_ID = " + seatId;
-//            ResultSet resultSet = statement.executeQuery(sqlStr);
-//            if (resultSet.next()) {
-//                System.out.println("Found ticket with id: " + resultSet.getInt(1));
-//                foundTicket = new Ticket(resultSet.getInt(1), resultSet.getInt(2),
-//                        resultSet.getInt(3), resultSet.getInt(4), resultSet.getInt(5));
-//            } else {
-//                System.out.println("Ticket not found!");
-//            }
-//            resultSet.close();
-//            statement.close();
-//        } catch (SQLException e) {
-//            System.out.println("Find ticket failed!");
-//            e.printStackTrace();
-//        }
-//        close();
-//        return foundTicket;
-//    }
+    public Ticket findTicket(String username, Schedule schedule, int seatRowNo, int seatColumnNo) {
+        int userId = findUser(username).getUserId();
+        int scheduleId = schedule.getScheduleId();
+        int seatId = findSeat(seatRowNo, seatColumnNo, schedule.getHouseId()).getSeatId();
+        Ticket foundTicket = null;
+        connect();
+        try {
+            Statement statement = connection.createStatement();
+            String sqlStr = "SELECT * FROM TICKET " +
+                    "WHERE USER_ID = " + userId + " AND SCHEDULE_ID = " + scheduleId + " AND SEAT_ID = " + seatId;
+            ResultSet resultSet = statement.executeQuery(sqlStr);
+            if (resultSet.next()) {
+                System.out.println("Found ticket with id: " + resultSet.getInt(1));
+                foundTicket = new Ticket(resultSet.getInt(1), resultSet.getInt(2),
+                        resultSet.getInt(3), resultSet.getInt(4), resultSet.getInt(5));
+            } else {
+                System.out.println("Ticket not found!");
+            }
+            resultSet.close();
+            statement.close();
+        } catch (SQLException e) {
+            System.out.println("Find ticket failed!");
+            e.printStackTrace();
+        }
+        close();
+        return foundTicket;
+    }
 
-//    public void deleteTicket(String username, Schedule schedule, int seatRowNo, int seatColumnNo) {
-//        Ticket foundTicket = findTicket(username, schedule, seatRowNo, seatColumnNo);
-//        connect();
-//        try {
-//            Statement statement = connection.createStatement();
-//            String sqlStr = "DELETE FROM TICKET " +
-//                    "WHERE ID = " + foundTicket.getTicketId();
-//            statement.executeUpdate(sqlStr);
-//            statement.close();
-//            System.out.println("Deleted ticket with id: " + foundTicket.getTicketId());
-//        } catch (SQLException e) {
-//            System.out.println("Delete ticket failed!");
-//            e.printStackTrace();
-//            return;
-//        }
-//        close();
-//    }
+    public void deleteTicket(String username, Schedule schedule, int seatRowNo, int seatColumnNo) {
+        Ticket foundTicket = findTicket(username, schedule, seatRowNo, seatColumnNo);
+        connect();
+        try {
+            Statement statement = connection.createStatement();
+            String sqlStr = "DELETE FROM TICKET " +
+                    "WHERE ID = " + foundTicket.getTicketId();
+            statement.executeUpdate(sqlStr);
+            statement.close();
+            System.out.println("Deleted ticket with id: " + foundTicket.getTicketId());
+        } catch (SQLException e) {
+            System.out.println("Delete ticket failed!");
+            e.printStackTrace();
+            return;
+        }
+        close();
+    }
 
     private void close() {
         try {

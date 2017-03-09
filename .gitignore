@@ -7,11 +7,4 @@
 *.iml
 out
 gen
-target/classes/MovieTicketingSystemSimulator.class
-target/classes/controller/DatabaseConnector.class
-target/classes/model/Cinema.class
-target/classes/model/House.class
-target/classes/model/Movie.class
-target/classes/model/Seat.class
-target/classes/model/Ticket.class
-target/classes/model/User.class
+*.class
