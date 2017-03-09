@@ -17,6 +17,6 @@ public class MovieTicketingSystemSimulator {
          int initSeatId = Seat.getInitSeatIdInDb();
          databaseConnector.createSeat(initSeatId, seats);
          */
-
+databaseConnector.findSeat(2,5,0);
     }
 }
